@@ -27,3 +27,18 @@ test('fixupSvgString should make parsing fixtures not throw', t => {
     });
     t.end();
 });
+
+test('fixupSvgString should correct invalid mime type', t => {
+    const filePath = path.resolve(__dirname, './fixtures/invalid-cloud.svg');
+    const svgString = fs.readFileSync(filePath)
+        .toString();
+    const fixed = fixupSvgString(svgString);
+
+    // Make sure we replace an invalid mime type from Photoshop exported SVGs
+    t.notEqual(svgString.indexOf('img/png'), -1);
+    t.equal(fixed.indexOf('img/png'), -1);
+    t.notThrow(() => {
+        domParser.parseFromString(fixed, 'text/xml');
+    });
+    t.end();
+});
